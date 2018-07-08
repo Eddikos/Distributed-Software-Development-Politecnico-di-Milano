@@ -1,0 +1,55 @@
+version: '2'
+services:
+  backend-devenv:
+    image: nyxgear/dsd-visual-portfolio:backend-devenv
+    environment:
+      NODE_ENV: development
+    ports:
+     - "3000:3000"
+    volumes:
+     - ./backend:/workspace/backend
+     - ./backend/config/knexfile.js:/workspace/knexfile.js
+     - ./backend/migrations:/workspace/migrations
+    depends_on:
+      - postgresdb
+    links:
+      - postgresdb:postgres
+
+  # frontend-devenv:
+  #   # image: registry.heroku.com/dsd-visual-portfolio/web
+  #   image: nyxgear/dsd-visual-portfolio:frontend-devenv
+  #   environment:
+  #     NODE_ENV: development
+  #     # HEROKU_RUNTIME: tru
+  #     # PORT: 4000
+  #     # NODE_ENV: production
+  #   ports:
+  #    - "4000:4000"
+  #   volumes:
+  #    - ./frontend:/workspace/frontend
+  #   depends_on:
+  #     - backend-devenv
+
+  postgresdb:
+    image: postgres
+    restart: always
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  # to use the following container: documentation/database/access-postgres-admin-tool.md
+  pgadmin4:
+    image: thajeztah/pgadmin4
+    ports:
+      - "5050:5050"
+    depends_on:
+      - postgresdb
+    links:
+      - postgresdb:postgres
+    volumes:
+      - pgadmin4data:/pgadmin
+
+volumes:
+  postgresdata:
+  pgadmin4data:
